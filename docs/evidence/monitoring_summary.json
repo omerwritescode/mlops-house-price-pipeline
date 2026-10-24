@@ -1,21 +1,21 @@
 {
   "stage": "monitor",
-  "created_at": "2026-10-24T11:46:37Z",
-  "pipeline_run_id": "20261024T114619-bd96e5",
+  "created_at": "2026-10-24T17:15:00Z",
+  "pipeline_run_id": "20261024T171434-09edab",
   "model": {
     "model_name": "house-price-model",
     "model_version": "1",
-    "mlflow_run_id": "304f2397a54a4adb85507e174abf0e85",
-    "git_commit": "4ca50c297ff677cd79a975293e5b167dbf62fb6f",
+    "mlflow_run_id": "72dd4e5977a340d9b64da5533684b127",
+    "git_commit": "7c40606becadab22a38c24651cab581c75a89790",
     "data_version": "c6cb9f1238299b16",
-    "config_hash": "f12fa2391a7ab648",
+    "config_hash": "e5eb6e8253066a4c",
     "image_tag": "local"
   },
   "reference": {
-    "holdout_rmse": 7.808151918045752,
-    "holdout_mae": 5.843238921854717,
+    "holdout_rmse": 7.806969889049749,
+    "holdout_mae": 5.841463212398904,
     "mean_price": 61.827180205415495,
-    "holdout_pred_mean": 61.904336660109536
+    "holdout_pred_mean": 61.905078684219895
   },
   "thresholds": {
     "batches": [
@@ -35,8 +35,8 @@
     "missing_increase_warning": 0.05,
     "latency_p95_ms_max": 300.0,
     "error_rate_max": 0.01,
-    "pushgateway_url": "",
-    "api_url": "",
+    "pushgateway_url": "http://localhost:9091",
+    "api_url": "http://localhost:8000",
     "auto_retrain": false
   },
   "overall_level": "CRITICAL",
@@ -155,35 +155,35 @@
       ],
       "drift_share": 0.0,
       "target_psi": 0.017410468863013135,
-      "prediction_psi": 0.011839466306370639,
+      "prediction_psi": 0.010518357703933943,
       "prediction_summary": {
-        "mean": 61.91204449627938,
-        "p10": 36.874305423795306,
-        "p50": 61.08645540295552,
-        "p90": 88.5841634620242
+        "mean": 61.912780000000005,
+        "p10": 36.873999999999995,
+        "p50": 61.09,
+        "p90": 88.58500000000002
       },
       "performance": {
-        "rmse": 7.175998955853461,
-        "mae": 5.478312818304121,
-        "r2": 0.891418234721949,
-        "mape": 0.09062475751185932,
-        "bias": 0.04357550372062465,
-        "p90_abs_error": 11.192285534575596,
+        "rmse": 7.17582931792556,
+        "mae": 5.47768,
+        "r2": 0.8914233683258046,
+        "mape": 0.09060812871765003,
+        "bias": 0.04283999999999992,
+        "p90_abs_error": 11.187000000000003,
         "within_10pct": 0.634,
         "n": 500,
-        "rmse_ratio": 0.9190393618326899,
-        "bias_pct": 0.0007047952627929785,
-        "reference_rmse": 7.808151918045752
+        "rmse_ratio": 0.9191567816843456,
+        "bias_pct": 0.0006928991401139062,
+        "reference_rmse": 7.806969889049749
       },
       "operational": {
-        "mode": "in-process (row-by-row model.predict)",
+        "mode": "live API http://localhost:8000",
         "requests": 500,
         "errors": 0,
         "error_rate": 0.0,
-        "latency_ms_p50": 11.168399000041518,
-        "latency_ms_p95": 16.57693834998213,
-        "latency_ms_p99": 17.555641939962925,
-        "throughput_rps": 82.38670346466367
+        "latency_ms_p50": 16.01868950001517,
+        "latency_ms_p95": 25.49726594934327,
+        "latency_ms_p99": 47.96810649953838,
+        "throughput_rps": 58.120523261830726
       },
       "alerts": []
     },
@@ -300,35 +300,35 @@
       ],
       "drift_share": 0.0,
       "target_psi": 0.031270873860148,
-      "prediction_psi": 0.04021665588379774,
+      "prediction_psi": 0.04190514252315405,
       "prediction_summary": {
-        "mean": 59.3685421036241,
-        "p10": 33.83936360026708,
-        "p50": 58.98571643457268,
-        "p90": 86.18530252475843
+        "mean": 59.369679999999995,
+        "p10": 33.837,
+        "p50": 58.985,
+        "p90": 86.177
       },
       "performance": {
-        "rmse": 9.208563191595488,
-        "mae": 6.908296891419679,
-        "r2": 0.8528408837800155,
-        "mape": 0.11172276509534153,
-        "bias": 4.4552978963759,
-        "p90_abs_error": 14.541049280299214,
+        "rmse": 9.209538142599769,
+        "mae": 6.909200000000001,
+        "r2": 0.8528097213673315,
+        "mape": 0.11177666615978245,
+        "bias": 4.454160000000001,
+        "p90_abs_error": 14.540999999999993,
         "within_10pct": 0.542,
         "n": 500,
-        "rmse_ratio": 1.1793524624326515,
-        "bias_pct": 0.07206050610061068,
-        "reference_rmse": 7.808151918045752
+        "rmse_ratio": 1.1796559066427676,
+        "bias_pct": 0.07204210163234741,
+        "reference_rmse": 7.806969889049749
       },
       "operational": {
-        "mode": "in-process (row-by-row model.predict)",
+        "mode": "live API http://localhost:8000",
         "requests": 500,
         "errors": 0,
         "error_rate": 0.0,
-        "latency_ms_p50": 10.341267499995865,
-        "latency_ms_p95": 15.766769150013715,
-        "latency_ms_p99": 16.95615431996771,
-        "throughput_rps": 91.33691968357321
+        "latency_ms_p50": 15.631532499355671,
+        "latency_ms_p95": 21.479396200220435,
+        "latency_ms_p99": 24.41123260925449,
+        "throughput_rps": 60.78049095653382
       },
       "alerts": [
         {
@@ -336,7 +336,7 @@
           "severity": "WARNING",
           "rule": "performance.rmse_ratio",
           "metric": "rmse_ratio",
-          "value": 1.1794,
+          "value": 1.1797,
           "threshold": 1.15,
           "message": "RMSE 9.21 is 1.18x the holdout RMSE 7.81 (>= 1.15x)"
         },
@@ -345,9 +345,9 @@
           "severity": "WARNING",
           "rule": "performance.bias",
           "metric": "bias_pct",
-          "value": 0.0721,
+          "value": 0.072,
           "threshold": 0.05,
-          "message": "systematic under-pricing: mean error +4.46 lakhs = 7.2% of the reference mean price (>= 5%)"
+          "message": "systematic under-pricing: mean error +4.45 lakhs = 7.2% of the reference mean price (>= 5%)"
         }
       ]
     },
@@ -466,33 +466,33 @@
       "target_psi": 0.15281083932074296,
       "prediction_psi": 0.09559887286313708,
       "prediction_summary": {
-        "mean": 56.8251252100592,
-        "p10": 30.440191283505992,
-        "p50": 54.59437924103719,
-        "p90": 83.96789378100583
+        "mean": 56.8269,
+        "p10": 30.445,
+        "p50": 54.595,
+        "p90": 83.96900000000002
       },
       "performance": {
-        "rmse": 16.24132348301788,
-        "mae": 13.092647989254907,
-        "r2": 0.6508469884146906,
-        "mape": 0.17646810995110132,
-        "bias": 12.78537478994081,
-        "p90_abs_error": 27.316610522958733,
-        "within_10pct": 0.216,
+        "rmse": 16.239742066917195,
+        "mae": 13.09248,
+        "r2": 0.6509149790945143,
+        "mape": 0.1764933354876261,
+        "bias": 12.7836,
+        "p90_abs_error": 27.316999999999997,
+        "within_10pct": 0.214,
         "n": 500,
-        "rmse_ratio": 2.080047065360225,
-        "bias_pct": 0.2067921381415504,
-        "reference_rmse": 7.808151918045752
+        "rmse_ratio": 2.0801594341609366,
+        "bias_pct": 0.20676343248272988,
+        "reference_rmse": 7.806969889049749
       },
       "operational": {
-        "mode": "in-process (row-by-row model.predict)",
+        "mode": "live API http://localhost:8000",
         "requests": 500,
         "errors": 0,
         "error_rate": 0.0,
-        "latency_ms_p50": 10.909145999960401,
-        "latency_ms_p95": 15.571293750031145,
-        "latency_ms_p99": 17.246237149992112,
-        "throughput_rps": 87.80437714408203
+        "latency_ms_p50": 15.24574399991252,
+        "latency_ms_p95": 22.157622149643423,
+        "latency_ms_p99": 24.53654668973285,
+        "throughput_rps": 61.457631130727854
       },
       "alerts": [
         {
@@ -545,7 +545,7 @@
           "severity": "CRITICAL",
           "rule": "performance.rmse_ratio",
           "metric": "rmse_ratio",
-          "value": 2.08,
+          "value": 2.0802,
           "threshold": 1.3,
           "message": "RMSE 16.24 is 2.08x the holdout RMSE 7.81 (>= 1.3x)"
         },
@@ -556,7 +556,7 @@
           "metric": "bias_pct",
           "value": 0.2068,
           "threshold": 0.1,
-          "message": "systematic under-pricing: mean error +12.79 lakhs = 20.7% of the reference mean price (>= 10%)"
+          "message": "systematic under-pricing: mean error +12.78 lakhs = 20.7% of the reference mean price (>= 10%)"
         },
         {
           "batch": "3",
@@ -576,7 +576,7 @@
       "severity": "WARNING",
       "rule": "performance.rmse_ratio",
       "metric": "rmse_ratio",
-      "value": 1.1794,
+      "value": 1.1797,
       "threshold": 1.15,
       "message": "RMSE 9.21 is 1.18x the holdout RMSE 7.81 (>= 1.15x)"
     },
@@ -585,9 +585,9 @@
       "severity": "WARNING",
       "rule": "performance.bias",
       "metric": "bias_pct",
-      "value": 0.0721,
+      "value": 0.072,
       "threshold": 0.05,
-      "message": "systematic under-pricing: mean error +4.46 lakhs = 7.2% of the reference mean price (>= 5%)"
+      "message": "systematic under-pricing: mean error +4.45 lakhs = 7.2% of the reference mean price (>= 5%)"
     },
     {
       "batch": "3",
@@ -639,7 +639,7 @@
       "severity": "CRITICAL",
       "rule": "performance.rmse_ratio",
       "metric": "rmse_ratio",
-      "value": 2.08,
+      "value": 2.0802,
       "threshold": 1.3,
       "message": "RMSE 16.24 is 2.08x the holdout RMSE 7.81 (>= 1.3x)"
     },
@@ -650,7 +650,7 @@
       "metric": "bias_pct",
       "value": 0.2068,
       "threshold": 0.1,
-      "message": "systematic under-pricing: mean error +12.79 lakhs = 20.7% of the reference mean price (>= 10%)"
+      "message": "systematic under-pricing: mean error +12.78 lakhs = 20.7% of the reference mean price (>= 10%)"
     },
     {
       "batch": "3",
@@ -661,5 +661,6 @@
       "threshold": 0.1,
       "message": "actual price distribution shifted: PSI 0.153, mean 69.6 vs reference 61.8"
     }
-  ]
+  ],
+  "pushgateway": "pushed"
 }
