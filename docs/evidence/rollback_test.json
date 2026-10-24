@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T10:47:34Z",
+  "generated_at": "2026-10-24T11:46:41Z",
   "retrain_exit_code": 0,
   "retrain_deployed": true,
   "retrain_gate": {
@@ -31,27 +31,27 @@
   },
   "rollback_exit_code": 0,
   "rollback_output": {
-    "rolled_back_from": "3",
+    "rolled_back_from": "2",
     "rolled_back_to": "1",
     "registry": "aliases swapped",
     "api_reload": "not configured (API picks up the bundle on restart)",
-    "at": "2026-10-24T10:47:12Z",
-    "bundle_fingerprint": "64946b3dea9d60f1"
+    "at": "2026-10-24T11:46:18Z",
+    "bundle_fingerprint": "6bd3a42fea08e24e"
   },
   "monitor_exit_code": 0,
   "state": {
     "before": {
-      "bundle_fingerprint": "64946b3dea9d60f1",
+      "bundle_fingerprint": "6bd3a42fea08e24e",
       "bundle_model_version": "1",
       "registry_production_version": "1"
     },
     "after_retrain": {
-      "bundle_fingerprint": "b9dc534b46de74de",
-      "bundle_model_version": "3",
-      "registry_production_version": "3"
+      "bundle_fingerprint": "9e5bd6dadf01a876",
+      "bundle_model_version": "2",
+      "registry_production_version": "2"
     },
     "after_rollback": {
-      "bundle_fingerprint": "64946b3dea9d60f1",
+      "bundle_fingerprint": "6bd3a42fea08e24e",
       "bundle_model_version": "1",
       "registry_production_version": "1"
     }

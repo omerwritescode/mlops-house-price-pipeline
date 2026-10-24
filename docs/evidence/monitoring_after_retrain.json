@@ -1,12 +1,12 @@
 {
   "stage": "monitor",
-  "created_at": "2026-10-24T10:47:07Z",
-  "pipeline_run_id": "20261024T104552-dfd2c8",
+  "created_at": "2026-10-24T11:46:13Z",
+  "pipeline_run_id": "20261024T114502-fe943f",
   "model": {
     "model_name": "house-price-model",
-    "model_version": "3",
-    "mlflow_run_id": "2e1d827ec07543ddb2146ab3ec57690c",
-    "git_commit": "efedbc207d0a67c2cac8603ff2d15a55ef50b3c4",
+    "model_version": "2",
+    "mlflow_run_id": "0163558a7afb48e19832db48ea689124",
+    "git_commit": "4ca50c297ff677cd79a975293e5b167dbf62fb6f",
     "data_version": "b740cd06b7a1c70b",
     "config_hash": "97afb4959b33bf3b",
     "image_tag": "local"
@@ -180,10 +180,10 @@
         "requests": 500,
         "errors": 0,
         "error_rate": 0.0,
-        "latency_ms_p50": 11.54555099992649,
-        "latency_ms_p95": 16.273700050305706,
-        "latency_ms_p99": 17.07508894040984,
-        "throughput_rps": 79.71120856156112
+        "latency_ms_p50": 11.091908999958378,
+        "latency_ms_p95": 16.145264050004467,
+        "latency_ms_p99": 17.770611030009604,
+        "throughput_rps": 85.19211558208883
       },
       "alerts": []
     },
@@ -325,10 +325,10 @@
         "requests": 500,
         "errors": 0,
         "error_rate": 0.0,
-        "latency_ms_p50": 11.645751500054757,
-        "latency_ms_p95": 16.649171199378543,
-        "latency_ms_p99": 17.971962550573153,
-        "throughput_rps": 78.82283244042739
+        "latency_ms_p50": 10.907625500010454,
+        "latency_ms_p95": 16.97436375005168,
+        "latency_ms_p99": 18.2738068899846,
+        "throughput_rps": 83.47441207376399
       },
       "alerts": []
     },
@@ -470,10 +470,10 @@
         "requests": 500,
         "errors": 0,
         "error_rate": 0.0,
-        "latency_ms_p50": 11.290000499684538,
-        "latency_ms_p95": 17.49921880018519,
-        "latency_ms_p99": 18.649581050403864,
-        "throughput_rps": 79.33701677923233
+        "latency_ms_p50": 10.747338499982106,
+        "latency_ms_p95": 16.1452405499915,
+        "latency_ms_p99": 17.81159419991468,
+        "throughput_rps": 87.5176795755396
       },
       "alerts": [
         {

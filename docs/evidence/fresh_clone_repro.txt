@@ -1,0 +1,14 @@
+Fresh-clone reproduction check, 2026-10-24T11:42:33Z
+
+$ git clone <repo> && cd <repo>      # commit 4ca50c2
+$ hpp run --skip-monitor
+data gate passed - 15 checks on 4000 rows
+model gate passed - RMSE 7.808, MAE 5.843, R2 0.875
+registry: house-price-model v1 -> alias 'production' (deployed by pipeline)
+deployed house-price-model v1 (previous: None); bundle fingerprint 0259062daf5fd52c; API reload: not configured (API picks up the bundle on restart)
+
+$ hpp verify-repro                     # compares with the committed reports/reference_metrics.json
+OK  rmse: reproduced 7.8082 vs reported 7.8082 (|diff| 0.0000 <= 0.05)
+OK  mae: reproduced 5.8432 vs reported 5.8432 (|diff| 0.0000 <= 0.05)
+REPRODUCED within tolerance
+exit code: 0

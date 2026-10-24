@@ -1,0 +1,22 @@
+LINEAGE OF THE DEPLOYED MODEL
+  start point        : deployments/current/manifest.json
+  deployed model     : house-price-model v1  image=local  at 2026-10-24T11:44:00Z
+  registry version   : v1 aliases=['production'] lifecycle=production transitioned_by=pipeline
+  -> MLflow run      : 304f2397a54a4adb85507e174abf0e85 (gradient_boosting-20261024T114317-7182c9) ✔ matches manifest
+     artifacts       : mlartifacts/304f2397a54a4adb85507e174abf0e85/artifacts
+     metrics         : cv_rmse_mean=7.5511, cv_rmse_std=0.4394, test_bias=0.2975, test_mae=5.8432, test_mape=0.0968, test_p90_abs_error=12.8193, test_r2=0.8745, test_rmse=7.8082, test_within_10pct=0.5807
+  -> code version    : 4ca50c297ff677cd79a975293e5b167dbf62fb6f (branch main, dirty=False) ✔ found in local repo
+     commit          : 4ca50c2 Omer Raza 2026-10-24 Resolve git lineage against the project root, not the process cwd
+  -> data version    : c6cb9f1238299b16 ✔ re-computed from files
+     ✔ data/raw/capstone_house_prices_train.csv rows=4000 sha256=e5be0612ce006b3b… (historical training data)
+  -> configuration   : hash f12fa2391a7ab648 ✔ matches config logged with run (mlartifacts/304f2397a54a4adb85507e174abf0e85/artifacts/config/effective_config.yaml)
+  -> pipeline runs   :
+     20261024T114317-7182c9  ingest    success      0.02s  [local]
+     20261024T114317-7182c9  validate  success      0.01s  [local]
+     20261024T114317-7182c9  features  success      0.08s  [local]
+     20261024T114317-7182c9  train     success      41.18s  [local]
+     20261024T114317-7182c9  evaluate  success      0.62s  [local]
+     20261024T114317-7182c9  register  success      0.01s  [local]
+     20261024T114317-7182c9  deploy    success      0.01s  [local]
+     20261024T114317-7182c9  monitor   success      23.33s  [local]
+  registry audit     : ✔ 2 versions checked, manual transitions: none

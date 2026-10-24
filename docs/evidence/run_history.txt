@@ -1,0 +1,31 @@
+pipeline_run_id          stage     status         secs  finished_at           detail
+20261024T114317-7182c9   ingest    success        0.02  2026-10-24T11:43:18Z  {"rows": 4000, "data_version": "c6cb9f1238299b16", "sources": 1}
+20261024T114317-7182c9   validate  success        0.01  2026-10-24T11:43:18Z  {"passed": true, "n_rows": 4000, "data_version": "c6cb9f1238299b16"}
+20261024T114317-7182c9   features  success        0.08  2026-10-24T11:43:18Z  {"n_train": 3213, "n_test": 787}
+20261024T114317-7182c9   train     success       41.18  2026-10-24T11:44:00Z  {"mlflow_run_id": "304f2397a54a4adb85507e174abf0e85", "cv_rmse": 7.551, "best_params": {"l
+20261024T114317-7182c9   evaluate  success        0.62  2026-10-24T11:44:00Z  {"passed": true, "rmse": 7.808, "mae": 5.843, "r2": 0.8745, "vs_production": null}
+20261024T114317-7182c9   register  success        0.01  2026-10-24T11:44:00Z  {"model_version": "1"}
+20261024T114317-7182c9   deploy    success        0.01  2026-10-24T11:44:00Z  {"model_version": "1", "previous_version": null}
+20261024T114317-7182c9   monitor   success       23.33  2026-10-24T11:44:24Z  {"overall_level": "CRITICAL", "batches": {"1": "OK", "2": "WARNING", "3": "CRITICAL"}, "al
+20261024T114426-e20a81   ingest    success        0.03  2026-10-24T11:44:27Z  {"rows": 4500, "data_version": "cbad615003eb5899", "sources": 2}
+20261024T114426-e20a81   validate  gate_failed    0.03  2026-10-24T11:44:27Z  DATA GATE FAILED - source 'file:bad_batch.csv' (500 rows) failed 3 checks: Neighborhood_Sc
+20261024T114428-ce2a31   ingest    success        0.04  2026-10-24T11:44:29Z  {"rows": 4000, "data_version": "c6cb9f1238299b16", "sources": 1}
+20261024T114428-ce2a31   validate  success        0.02  2026-10-24T11:44:29Z  {"passed": true, "n_rows": 4000, "data_version": "c6cb9f1238299b16"}
+20261024T114428-ce2a31   features  success        0.14  2026-10-24T11:44:29Z  {"n_train": 3213, "n_test": 787}
+20261024T114428-ce2a31   train     success        1.84  2026-10-24T11:44:31Z  {"mlflow_run_id": "2bf0e4a8c20b414fa5320ade6236c90c", "cv_rmse": 20.395, "best_params": {"
+20261024T114428-ce2a31   evaluate  gate_failed    0.74  2026-10-24T11:44:31Z  MODEL GATE FAILED - RMSE 20.409 (required <= 9.0) | MAE 15.809 (required <= 7.0) | R2 0.14
+20261024T114433-5b9d34   ingest    success        0.03  2026-10-24T11:44:34Z  {"rows": 4000, "data_version": "c6cb9f1238299b16", "sources": 1}
+20261024T114433-5b9d34   validate  success        0.01  2026-10-24T11:44:34Z  {"passed": true, "n_rows": 4000, "data_version": "c6cb9f1238299b16"}
+20261024T114433-5b9d34   features  success        0.08  2026-10-24T11:44:34Z  {"n_train": 3213, "n_test": 787}
+20261024T114433-5b9d34   train     success       25.88  2026-10-24T11:45:00Z  {"mlflow_run_id": "72fe8e74409e450985178238c8aeca32", "cv_rmse": 8.288, "best_params": {"l
+20261024T114433-5b9d34   evaluate  gate_failed     0.9  2026-10-24T11:45:01Z  MODEL GATE FAILED - candidate RMSE 8.362 vs production v1 7.808 (+7.10%, allowed <= +2%)
+20261024T114502-fe943f   ingest    success        0.04  2026-10-24T11:45:03Z  {"rows": 5500, "data_version": "b740cd06b7a1c70b", "sources": 2}
+20261024T114502-fe943f   validate  success        0.05  2026-10-24T11:45:03Z  {"passed": true, "n_rows": 5500, "data_version": "b740cd06b7a1c70b"}
+20261024T114502-fe943f   features  success        0.12  2026-10-24T11:45:03Z  {"n_train": 4436, "n_test": 1064}
+20261024T114502-fe943f   train     success       50.77  2026-10-24T11:45:54Z  {"mlflow_run_id": "0163558a7afb48e19832db48ea689124", "cv_rmse": 8.606, "best_params": {"l
+20261024T114502-fe943f   evaluate  success        0.82  2026-10-24T11:45:55Z  {"passed": true, "rmse": 8.622, "mae": 6.436, "r2": 0.851, "vs_production": "v1"}
+20261024T114502-fe943f   register  success        0.01  2026-10-24T11:45:55Z  {"model_version": "2"}
+20261024T114502-fe943f   deploy    success        0.01  2026-10-24T11:45:55Z  {"model_version": "2", "previous_version": "1"}
+20261024T114502-fe943f   monitor   success       20.89  2026-10-24T11:46:16Z  {"overall_level": "CRITICAL", "batches": {"1": "OK", "2": "OK", "3": "CRITICAL"}, "alerts"
+20261024T114618-79b8b4   rollback  success              2026-10-24T11:46:18Z  {"rolled_back_from": "2", "rolled_back_to": "1", "registry": "aliases swapped", "api_reloa
+20261024T114619-bd96e5   monitor   success       20.74  2026-10-24T11:46:40Z  {"overall_level": "CRITICAL", "batches": {"1": "OK", "2": "WARNING", "3": "CRITICAL"}, "al

@@ -35,8 +35,8 @@ hpp monitor                          # regenerate the monitoring report for the 
 
 `scripts/demo_rollback.py` (`make rollback-test`) retrains, deploys the new model, rolls back, and checks
 that the restored bundle is byte-identical to the original by comparing content fingerprints. Result:
-[`evidence/rollback_test.md`](evidence/rollback_test.md). The fingerprint goes from `64946b3dea9d60f1` (v1)
-to a new bundle (the retrained version) and back to `64946b3dea9d60f1`. The registry `production` alias
+[`evidence/rollback_test.md`](evidence/rollback_test.md). The fingerprint goes from `6bd3a42fea08e24e` (v1)
+to `9e5bd6dadf01a876` (retrained v2) and back to `6bd3a42fea08e24e`. The registry `production` alias
 returns to v1. The same flow is also covered by `tests/test_pipeline_integration.py::test_full_pipeline_gates_lineage_rollback` and `tests/test_deploy.py`.
 
 ## B. Image rollback: `rollback` workflow
