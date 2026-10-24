@@ -31,19 +31,19 @@ def _manifest_from_api(url: str) -> dict:
     return r.json()
 
 
-def _git_commit_exists(commit: str) -> bool | None:
+def _git_commit_exists(commit: str, root: Path) -> bool | None:
     if not commit or commit == "unknown":
         return None
     try:
-        subprocess.run(["git", "cat-file", "-e", f"{commit}^{{commit}}"], check=True, capture_output=True, timeout=5)
+        subprocess.run(["git", "-C", str(root), "cat-file", "-e", f"{commit}^{{commit}}"], check=True, capture_output=True, timeout=5)
         return True
     except Exception:
         return False
 
 
-def _git_subject(commit: str) -> str | None:
+def _git_subject(commit: str, root: Path) -> str | None:
     try:
-        return subprocess.run(["git", "log", "-1", "--format=%h %an %ad %s", "--date=short", commit],
+        return subprocess.run(["git", "-C", str(root), "log", "-1", "--format=%h %an %ad %s", "--date=short", commit],
                               capture_output=True, text=True, timeout=5, check=True).stdout.strip()
     except Exception:
         return None
@@ -78,7 +78,7 @@ def trace(ctx: StageContext, api_url: str | None = None) -> dict[str, Any]:
     commit = manifest.get("git_commit")
     out["code"] = {"git_commit": commit, "git_branch": manifest.get("git_branch"),
                    "dirty_at_training": manifest.get("git_dirty"),
-                   "found_in_local_repo": _git_commit_exists(commit), "commit": _git_subject(commit)}
+                   "found_in_local_repo": _git_commit_exists(commit, ctx.root), "commit": _git_subject(commit, ctx.root)}
 
     # ---------------- registry + run (MLflow)
     try:

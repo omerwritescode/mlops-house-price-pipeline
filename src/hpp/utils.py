@@ -90,20 +90,22 @@ def append_jsonl(path: str | Path, obj: Any) -> None:
 
 
 # ------------------------------------------------------------------ git
-def _git(*args: str) -> str | None:
+def _git(*args: str, root: Path | None = None) -> str | None:
+    cmd = ["git", "-C", str(root), *args] if root else ["git", *args]
     try:
-        out = subprocess.run(["git", *args], capture_output=True, text=True, timeout=5, check=True)
+        out = subprocess.run(cmd, capture_output=True, text=True, timeout=5, check=True)
         return out.stdout.strip()
     except Exception:
         return None
 
 
-def git_info() -> dict[str, Any]:
-    """Code version for lineage. CI variables win over the local checkout."""
-    commit = os.environ.get("GITHUB_SHA") or os.environ.get("GIT_SHA") or _git("rev-parse", "HEAD") or "unknown"
+def git_info(root: Path | None = None) -> dict[str, Any]:
+    """Code version for lineage (of the repository at ``root``). CI variables win over the local checkout."""
+    commit = (os.environ.get("GITHUB_SHA") or os.environ.get("GIT_SHA") or _git("rev-parse", "HEAD", root=root)
+              or "unknown")
     branch = (os.environ.get("GITHUB_HEAD_REF") or os.environ.get("GITHUB_REF_NAME")
-              or _git("rev-parse", "--abbrev-ref", "HEAD") or "unknown")
-    status = _git("status", "--porcelain", "--untracked-files=no")
+              or _git("rev-parse", "--abbrev-ref", "HEAD", root=root) or "unknown")
+    status = _git("status", "--porcelain", "--untracked-files=no", root=root)
     return {
         "git_commit": commit,
         "git_short": commit[:7] if commit != "unknown" else "unknown",

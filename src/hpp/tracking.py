@@ -162,7 +162,7 @@ def lineage_tags(ctx_root: Path, pipeline_run_id: str, data_version: str, config
         "config_hash": config_hash,
         "orchestrator": orchestrator,
         "hpp_version": __version__,
-        **git_info(),
+        **git_info(ctx_root),
     }
     if os.environ.get("GITHUB_RUN_ID"):
         tags["ci_run"] = f"{os.environ.get('GITHUB_SERVER_URL', 'https://github.com')}/" \
