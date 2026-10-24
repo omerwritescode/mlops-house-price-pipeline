@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Pipeline outputs (re-created by `make pipeline`; evidence that should be kept lives in docs/evidence)
+artifacts/
+logs/
+mlflow.db
+mlflow.db.*
+mlartifacts/
+mlruns/
+deployments/
+reports/monitoring/
+data/scenarios/
+
+# Keep the committed reproducibility reference
+!reports/reference_metrics.json

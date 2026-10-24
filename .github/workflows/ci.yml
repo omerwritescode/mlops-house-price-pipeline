@@ -1,0 +1,89 @@
+# Pull-request CI: tests + a lightweight end-to-end pipeline run + image build/smoke test.
+# A PR fails if lint/tests fail OR if the data gate / model gate fails in the pipeline run.
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HPP_ORCHESTRATOR: local
+      MLFLOW_TRACKING_URI: sqlite:///mlflow.db
+      IMAGE_TAG: pr-${{ github.event.pull_request.number || 'manual' }}-${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install
+        run: |
+          pip install -r requirements.txt
+          pip install --no-deps -e .
+
+      - name: Lint
+        run: ruff check src tests scripts
+
+      - name: Validate configuration
+        run: |
+          hpp validate-config
+          hpp validate-config --override configs/ci.yaml
+
+      - name: Unit + integration + API tests
+        run: pytest -q --junitxml=test-results.xml
+
+      - name: Lightweight pipeline run (ingest -> ... -> deploy -> monitor)
+        run: hpp run --override configs/ci.yaml
+
+      - name: Gate summary
+        if: always()
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, pathlib
+          def load(p):
+              p = pathlib.Path(p); return json.loads(p.read_text()) if p.exists() else None
+          v, g, m = load("artifacts/validate/report.json"), load("artifacts/evaluate/gate.json"), load("reports/monitoring/summary.json")
+          print("## Pipeline gates")
+          print(f"- **Data gate:** {'PASSED' if v and v['passed'] else 'FAILED'} - {v['message'] if v else 'not run'}")
+          print(f"- **Model gate:** {'PASSED' if g and g['passed'] else 'FAILED'} - {g['message'] if g else 'not run'}")
+          if m:
+              print(f"- **Monitoring:** overall {m['overall_level']} - " + ", ".join(f"batch {b['batch']}: {b['level']}" for b in m['batches']))
+          PY
+
+      - name: Build serving image
+        run: docker build -t hpp-api:ci --build-arg GIT_SHA=${{ github.sha }} --build-arg IMAGE_TAG=$IMAGE_TAG .
+
+      - name: Smoke test container
+        run: |
+          docker run -d --name api -p 8000:8000 hpp-api:ci
+          for i in $(seq 1 30); do curl -sf localhost:8000/health && break; sleep 1; done
+          curl -sf localhost:8000/version
+          curl -sf -X POST localhost:8000/predict -H 'content-type: application/json' \
+            -d '{"Area_sqft":1150,"Bedrooms":2,"Bathrooms":2,"Age_Years":12,"Distance_to_Center_km":9.5,"Neighborhood_Score":6.5,"Has_Parking":1,"Property_Condition":"Good","City_Zone":"Central"}'
+          curl -sf localhost:8000/metrics | grep hpp_predictions_total
+          docker rm -f api
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr-pipeline-evidence
+          path: |
+            test-results.xml
+            artifacts/validate/report.json
+            artifacts/evaluate/gate.json
+            artifacts/evaluate/metrics.json
+            deployments/current/manifest.json
+            reports/monitoring/
+            logs/

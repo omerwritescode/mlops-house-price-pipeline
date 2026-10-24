@@ -1,0 +1,12 @@
+# FAILURE SCENARIO 2 (Task 4) - a pull request that "speeds up training" with a far too small model.
+# Expected: MODEL GATE FAILS on the absolute thresholds; nothing is registered or deployed.
+#   hpp run --override configs/scenarios/weak_model.yaml
+training:
+  model_type: gradient_boosting
+  models:
+    gradient_boosting:
+      params: {loss: squared_error, subsample: 0.8, min_samples_leaf: 5, random_state: 42}
+      search:
+        n_estimators: [10]
+        learning_rate: [0.05]
+        max_depth: [1]

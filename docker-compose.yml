@@ -1,0 +1,63 @@
+# Local production-like stack.
+#   docker compose up -d --build          API + Prometheus + Pushgateway + Grafana + MLflow UI
+#   docker compose --profile prefect up -d  ... plus a Prefect server UI on :4200
+# URLs: API http://localhost:8000/docs | Grafana http://localhost:3000 | Prometheus http://localhost:9090
+#       MLflow http://localhost:5000 | Pushgateway http://localhost:9091 | Prefect http://localhost:4200
+# Rollback to an earlier image:  HPP_IMAGE=ghcr.io/<owner>/hpp-api:<sha> docker compose up -d api
+services:
+  api:
+    image: ${HPP_IMAGE:-hpp-api:local}
+    build:
+      context: .
+      args:
+        GIT_SHA: ${GIT_SHA:-local}
+        IMAGE_TAG: ${IMAGE_TAG:-local}
+    ports: ["8000:8000"]
+    environment:
+      # Serve whatever the pipeline last deployed on this machine (hot-reloaded via /admin/reload).
+      # Remove this + the volume to serve the bundle baked into the image instead.
+      MODEL_DIR: /app/deployments/current
+      HPP_ADMIN_TOKEN: ${HPP_ADMIN_TOKEN:-change-me}
+    volumes:
+      - ./deployments:/app/deployments:ro   # parent dir, so the atomic current/previous swap is visible
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=15d"]
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus:ro
+    ports: ["9090:9090"]
+    depends_on: [api, pushgateway]
+
+  pushgateway:
+    image: prom/pushgateway:v1.10.0
+    ports: ["9091:9091"]
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/hpp.json
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["3000:3000"]
+    depends_on: [prometheus]
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.17.2
+    # Same absolute path inside the container so artifact URIs recorded by the pipeline resolve.
+    working_dir: ${PWD}
+    volumes:
+      - ${PWD}:${PWD}
+    command: ["mlflow", "ui", "--backend-store-uri", "sqlite:///${PWD}/mlflow.db", "--host", "0.0.0.0", "--port", "5000"]
+    ports: ["5000:5000"]
+
+  prefect:
+    profiles: ["prefect"]
+    image: prefecthq/prefect:3-python3.11
+    command: ["prefect", "server", "start", "--host", "0.0.0.0"]
+    ports: ["4200:4200"]

@@ -1,0 +1,13 @@
+# Lightweight overlay for pull-request CI: same data, same gates, a much smaller search so the
+# whole pipeline finishes in about a minute on a GitHub runner. Uses the plain local engine.
+orchestration:
+  engine: local
+training:
+  cv_folds: 3
+  models:
+    gradient_boosting:
+      params: {loss: squared_error, subsample: 0.8, min_samples_leaf: 5, random_state: 42}
+      search:
+        n_estimators: [300]
+        learning_rate: [0.05]
+        max_depth: [3]

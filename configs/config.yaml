@@ -1,0 +1,148 @@
+# =====================================================================
+#  SINGLE SOURCE OF TRUTH for the house-price pipeline.
+#  Every path, threshold and hyperparameter used by the code lives here.
+#  The file is validated on load (src/hpp/config.py); unknown keys or
+#  out-of-range values stop the pipeline before any work is done.
+#  ${VAR:-default} is replaced from the environment at load time.
+#  Overlays (configs/ci.yaml, configs/scenarios/*.yaml) are deep-merged
+#  on top with:  hpp run --override <file>
+# =====================================================================
+
+project:
+  name: house-price-pipeline
+  seed: 42
+
+paths:
+  raw_train: data/raw/capstone_house_prices_train.csv
+  incoming_batches: data/raw/capstone_incoming_batches.csv
+  artifacts_dir: artifacts          # per-stage inputs/outputs (re-runnable stages)
+  logs_dir: logs                    # per-stage log files + run_history.jsonl
+  deployments_dir: deployments      # deployments/current = what the API serves
+  reports_dir: reports              # monitoring report + charts
+
+data:
+  id_column: House_ID
+  batch_column: Batch
+  target: Price_Lakhs
+  numeric_features:
+    - Area_sqft
+    - Bedrooms
+    - Bathrooms
+    - Age_Years
+    - Distance_to_Center_km
+    - Neighborhood_Score
+    - Has_Parking
+  categorical_features:              # allowed levels; Property_Condition is ordinal (in this order)
+    Property_Condition: [Poor, Fair, Good, Excellent]
+    City_Zone: [North, South, East, West, Central]
+  ordinal_features: [Property_Condition]
+  non_predictive: [House_ID, Batch]  # brief: identifiers are never features
+  # Retraining inputs. Labelled incoming batches (by Batch number) and/or new
+  # files that are appended to the training data. Empty = initial model.
+  train_with_batches: []
+  extra_training_files: []
+
+# ----------------------------------------------------------------------
+# DATA GATE  (stage: validate) - justified in docs/design_note.md
+# ----------------------------------------------------------------------
+validation:
+  min_rows: 200                      # below this a retrain is statistically meaningless
+  max_missing_fraction: 0.10         # per feature; supplied data has exactly 4% in 3 columns
+  max_missing_fraction_target: 0.0   # a training row without a price is unusable
+  max_invalid_row_fraction: 0.01     # rows with out-of-range / unknown-category values
+  max_duplicate_id_fraction: 0.0
+  ranges:                            # physically plausible bounds, wider than observed data
+    Area_sqft: [100, 10000]
+    Bedrooms: [1, 10]
+    Bathrooms: [1, 10]
+    Age_Years: [0, 100]
+    Distance_to_Center_km: [0, 100]
+    Neighborhood_Score: [1, 10]
+    Has_Parking: [0, 1]
+    Price_Lakhs: [1, 2000]
+
+features:
+  test_size: 0.20
+  imputation_strategy: median
+  add_missing_indicators: true
+  engineered: [Rooms_Total, Area_per_Room, Log_Distance, Log_Area]
+  reference_sample_rows: 2000        # stored with the model for drift tests
+
+# ----------------------------------------------------------------------
+# TRAINING  (stage: train)
+# ----------------------------------------------------------------------
+training:
+  model_type: gradient_boosting      # gradient_boosting | random_forest | ridge
+  cv_folds: 5
+  scoring: neg_root_mean_squared_error
+  n_jobs: -1
+  models:
+    gradient_boosting:
+      params: {loss: squared_error, subsample: 0.8, min_samples_leaf: 5, random_state: 42}
+      search:
+        n_estimators: [300, 600]
+        learning_rate: [0.03, 0.05]
+        max_depth: [2, 3]
+    random_forest:
+      params: {min_samples_leaf: 2, random_state: 42, n_jobs: -1}
+      search:
+        n_estimators: [300]
+        max_features: [0.5, 1.0]
+    ridge:
+      params: {}
+      search:
+        alpha: [0.3, 1.0, 3.0]
+
+# ----------------------------------------------------------------------
+# MODEL GATE  (stage: evaluate) - justified in docs/design_note.md
+# ----------------------------------------------------------------------
+evaluation:
+  primary_metric: rmse
+  thresholds:
+    rmse_max: 9.0        # lakhs. Naive mean model = 22.0; achievable ~7.5
+    mae_max: 7.0         # lakhs, ~11% of the mean listing price (61.9)
+    r2_min: 0.80
+    mape_max: 0.15
+  compare_to_production: true
+  max_regression_pct: 2.0            # candidate may be at most 2% worse than production on the same test set
+  reproducibility_tolerance: 0.05    # lakhs; fresh-clone RMSE must match the reported value within this
+
+registry:
+  model_name: house-price-model
+  candidate_alias: candidate
+  production_alias: production
+  previous_alias: previous-production
+
+tracking:
+  uri: ${MLFLOW_TRACKING_URI:-sqlite:///mlflow.db}
+  experiment: house-price-pipeline
+  artifact_location: mlartifacts
+
+orchestration:
+  engine: ${HPP_ORCHESTRATOR:-prefect}  # prefect | local
+  flow_name: house-price-pipeline
+
+deployment:
+  api_reload_url: ${HPP_API_RELOAD_URL:-}   # e.g. http://localhost:8000/admin/reload
+  api_admin_token: ${HPP_ADMIN_TOKEN:-change-me}
+
+# ----------------------------------------------------------------------
+# MONITORING  (stage: monitor) - justified in docs/design_note.md
+# ----------------------------------------------------------------------
+monitoring:
+  batches: [1, 2, 3]
+  psi_bins: 10
+  psi_warning: 0.10        # industry convention: <0.1 stable, 0.1-0.2 moderate, >0.2 major shift
+  psi_critical: 0.20
+  ks_pvalue: 0.01          # used together with PSI (KS alone over-flags at n=500)
+  drift_share_critical: 0.30   # share of features with PSI >= warning that signals dataset drift
+  rmse_ratio_warning: 1.15     # batch RMSE / holdout RMSE
+  rmse_ratio_critical: 1.30
+  bias_warning_pct: 0.05       # |mean(actual - predicted)| as share of reference mean price
+  bias_critical_pct: 0.10
+  missing_increase_warning: 0.05
+  latency_p95_ms_max: 300      # serving SLO (non-functional requirement in the design note)
+  error_rate_max: 0.01         # share of failed prediction requests
+  pushgateway_url: ${HPP_PUSHGATEWAY_URL:-}
+  api_url: ${HPP_API_URL:-}    # if set, batches are replayed through the live API
+  auto_retrain: false          # CRITICAL alerts recommend retraining; a human approves by default

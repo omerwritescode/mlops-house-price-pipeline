@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-10-24T10:42:01Z",
+  "scenarios": [
+    {
+      "scenario": "1. Bad data batch -> DATA GATE",
+      "command": "hpp run --batch-file data/scenarios/bad_batch.csv --skip-monitor",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "before": {
+        "bundle_fingerprint": "64946b3dea9d60f1",
+        "bundle_model_version": "1",
+        "registry_production_version": "1"
+      },
+      "after": {
+        "bundle_fingerprint": "64946b3dea9d60f1",
+        "bundle_model_version": "1",
+        "registry_production_version": "1"
+      },
+      "production_unchanged": true,
+      "output": "==============================================================================\n  PIPELINE STOPPED SAFELY - DATA GATE FAILED\n==============================================================================\n  - DATA GATE FAILED - source 'file:bad_batch.csv' (500 rows) failed 3 checks: Neighborhood_Score: 15 non-numeric values e.g. ['unknown']\n  - 37.8% missing in Neighborhood_Score\n  - 16.00% of rows invalid - Neighborhood_Score: 15 non-numeric values e.g. ['unknown']; range.Area_sqft: 40 values outside [100, 10000] (min=-181.159, max=2345); category.City_Zone: 25 unknown values ['Downtown']\n\n  Production model unchanged : house-price-model v1 (bundle fingerprint 64946b3dea9d60f1)\n  Nothing was registered or deployed; the previous model keeps serving.\n  Evidence                   : artifacts/validate/report.json\n=============================================================================="
+    },
+    {
+      "scenario": "2. Model below threshold -> MODEL GATE",
+      "command": "hpp run --override configs/scenarios/weak_model.yaml --skip-monitor",
+      "exit_code": 3,
+      "expected_exit_code": 3,
+      "before": {
+        "bundle_fingerprint": "64946b3dea9d60f1",
+        "bundle_model_version": "1",
+        "registry_production_version": "1"
+      },
+      "after": {
+        "bundle_fingerprint": "64946b3dea9d60f1",
+        "bundle_model_version": "1",
+        "registry_production_version": "1"
+      },
+      "production_unchanged": true,
+      "output": "==============================================================================\n  PIPELINE STOPPED SAFELY - MODEL GATE FAILED\n==============================================================================\n  - MODEL GATE FAILED - RMSE 20.409 (required <= 9.0)\n  - MAE 15.809 (required <= 7.0)\n  - R2 0.143 (required >= 0.8)\n  - MAPE 0.329 (required <= 0.15)\n  - candidate RMSE 20.409 vs production v1 7.808 (+161.37%, allowed <= +2%)\n\n  Production model unchanged : house-price-model v1 (bundle fingerprint 64946b3dea9d60f1)\n  Nothing was registered or deployed; the previous model keeps serving.\n  Evidence                   : artifacts/evaluate/gate.json\n=============================================================================="
+    },
+    {
+      "scenario": "3. Model worse than production -> MODEL GATE",
+      "command": "hpp run --override configs/scenarios/regressed_model.yaml --skip-monitor",
+      "exit_code": 3,
+      "expected_exit_code": 3,
+      "before": {
+        "bundle_fingerprint": "64946b3dea9d60f1",
+        "bundle_model_version": "1",
+        "registry_production_version": "1"
+      },
+      "after": {
+        "bundle_fingerprint": "64946b3dea9d60f1",
+        "bundle_model_version": "1",
+        "registry_production_version": "1"
+      },
+      "production_unchanged": true,
+      "output": "==============================================================================\n  PIPELINE STOPPED SAFELY - MODEL GATE FAILED\n==============================================================================\n  - MODEL GATE FAILED - candidate RMSE 8.362 vs production v1 7.808 (+7.10%, allowed <= +2%)\n\n  Production model unchanged : house-price-model v1 (bundle fingerprint 64946b3dea9d60f1)\n  Nothing was registered or deployed; the previous model keeps serving.\n  Evidence                   : artifacts/evaluate/gate.json\n=============================================================================="
+    }
+  ]
+}

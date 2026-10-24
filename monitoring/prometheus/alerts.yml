@@ -1,0 +1,45 @@
+# Alert rules - thresholds match configs/config.yaml (monitoring.*); justified in docs/design_note.md
+groups:
+  - name: hpp-serving
+    rules:
+      - alert: HppApiDown
+        expr: up{job="hpp-api"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations: {summary: "Prediction API is not reachable"}
+      - alert: HppHighErrorRate
+        expr: |
+          sum(rate(hpp_http_requests_total{endpoint=~"/predict.*",status=~"5.."}[5m]))
+            / clamp_min(sum(rate(hpp_http_requests_total{endpoint=~"/predict.*"}[5m])), 1e-9) > 0.01
+        for: 5m
+        labels: {severity: critical}
+        annotations: {summary: "More than 1% of prediction requests fail"}
+      - alert: HppHighLatencyP95
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(hpp_http_request_duration_seconds_bucket{endpoint="/predict"}[5m]))) > 0.3
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "p95 /predict latency above the 300 ms SLO"}
+      - alert: HppNoModelLoaded
+        expr: absent(hpp_model_info == 1)
+        for: 2m
+        labels: {severity: critical}
+        annotations: {summary: "API is running without a model"}
+  - name: hpp-model-quality
+    rules:
+      - alert: HppBatchPerformanceDegraded
+        expr: hpp_batch_rmse_ratio >= 1.30
+        labels: {severity: critical}
+        annotations: {summary: "Batch {{ $labels.batch }} RMSE >= 1.3x holdout - retraining recommended"}
+      - alert: HppBatchPerformanceWarning
+        expr: hpp_batch_rmse_ratio >= 1.15 and hpp_batch_rmse_ratio < 1.30
+        labels: {severity: warning}
+        annotations: {summary: "Batch {{ $labels.batch }} RMSE >= 1.15x holdout"}
+      - alert: HppFeatureDrift
+        expr: hpp_batch_feature_psi >= 0.2
+        labels: {severity: critical}
+        annotations: {summary: "{{ $labels.feature }} drifted in batch {{ $labels.batch }} (PSI >= 0.2)"}
+      - alert: HppBatchAlertLevel
+        expr: hpp_batch_alert_level >= 2
+        labels: {severity: critical}
+        annotations: {summary: "Monitoring marked batch {{ $labels.batch }} CRITICAL"}

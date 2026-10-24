@@ -1,0 +1,49 @@
+# Manual rollback: point the `latest` / `production` tags back at an earlier, already-tested image.
+# Any running deployment that pulls `latest` (e.g. `docker compose pull && docker compose up -d api`)
+# then serves the previous model. The model inside each image is immutable, so this is instant.
+name: rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to roll back to (e.g. sha-1a2b3c4 or v1.0.12)"
+        required: true
+      reason:
+        description: "Why are we rolling back?"
+        required: true
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Re-point latest/production to ${{ inputs.image_tag }}
+        run: |
+          OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          IMAGE=ghcr.io/${OWNER}/hpp-api
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker pull ${IMAGE}:${{ inputs.image_tag }}
+          docker run -d --name api -p 8000:8000 ${IMAGE}:${{ inputs.image_tag }}
+          for i in $(seq 1 30); do curl -sf localhost:8000/health && break; sleep 1; done
+          curl -sf localhost:8000/version | tee version.json
+          docker rm -f api
+          docker tag ${IMAGE}:${{ inputs.image_tag }} ${IMAGE}:latest
+          docker tag ${IMAGE}:${{ inputs.image_tag }} ${IMAGE}:production
+          docker push ${IMAGE}:latest
+          docker push ${IMAGE}:production
+      - name: Record the rollback
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "## Rollback to \`${{ inputs.image_tag }}\`"
+            echo "- Reason: ${{ inputs.reason }}"
+            echo "- Triggered by: ${{ github.actor }} at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "- Serving version after rollback:"; echo '```'; cat version.json; echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY" > notes.md
+          gh release create "rollback-${GITHUB_RUN_NUMBER}" --repo "${GITHUB_REPOSITORY}" \
+            --title "Rollback to ${{ inputs.image_tag }}" --notes-file notes.md --prerelease

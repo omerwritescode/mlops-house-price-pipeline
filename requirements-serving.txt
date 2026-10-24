@@ -1,0 +1,12 @@
+# Runtime for the serving container only (no MLflow / Prefect -> small image).
+# Must match the training environment for scikit-learn/numpy/pandas so the pickled pipeline loads.
+numpy~=1.26.4
+pandas~=2.2.3
+scikit-learn~=1.5.2
+scipy~=1.14.1
+joblib~=1.4.2
+pyyaml~=6.0.2
+pydantic~=2.9.2
+fastapi~=0.115.0
+uvicorn[standard]~=0.32.0
+prometheus-client~=0.21.0

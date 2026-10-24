@@ -1,0 +1,11 @@
+# Full pipeline environment (training, tracking, orchestration, monitoring, serving, tests).
+# Pinned to compatible-release ranges for reproducibility; Python 3.11 (see .python-version).
+-r requirements-serving.txt
+mlflow~=2.17.2
+prefect~=3.1.0
+matplotlib~=3.9.2
+requests~=2.32.3
+# dev / CI
+pytest~=8.3.3
+httpx~=0.27.2
+ruff~=0.7.0

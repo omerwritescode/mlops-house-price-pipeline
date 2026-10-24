@@ -1,0 +1,113 @@
+{
+  "generated_at": "2026-10-24T10:47:34Z",
+  "retrain_exit_code": 0,
+  "retrain_deployed": true,
+  "retrain_gate": {
+    "passed": true,
+    "message": "model gate passed - RMSE 8.622, MAE 6.436, R2 0.851",
+    "candidate": {
+      "rmse": 8.622407961214472,
+      "mae": 6.436061094891041,
+      "r2": 0.8510447591723436,
+      "mape": 0.10625719109901569,
+      "bias": 0.1571390816787573,
+      "p90_abs_error": 13.763713461436717,
+      "within_10pct": 0.568609022556391,
+      "n": 1064
+    },
+    "production": {
+      "label": "v1",
+      "metrics": {
+        "rmse": 8.909797429918719,
+        "mae": 6.530768949479693,
+        "r2": 0.8409497654590247,
+        "mape": 0.10495238626332133,
+        "bias": 1.7367086353417727,
+        "p90_abs_error": 14.203813383939899,
+        "within_10pct": 0.5507518796992481,
+        "n": 1064
+      }
+    }
+  },
+  "rollback_exit_code": 0,
+  "rollback_output": {
+    "rolled_back_from": "3",
+    "rolled_back_to": "1",
+    "registry": "aliases swapped",
+    "api_reload": "not configured (API picks up the bundle on restart)",
+    "at": "2026-10-24T10:47:12Z",
+    "bundle_fingerprint": "64946b3dea9d60f1"
+  },
+  "monitor_exit_code": 0,
+  "state": {
+    "before": {
+      "bundle_fingerprint": "64946b3dea9d60f1",
+      "bundle_model_version": "1",
+      "registry_production_version": "1"
+    },
+    "after_retrain": {
+      "bundle_fingerprint": "b9dc534b46de74de",
+      "bundle_model_version": "3",
+      "registry_production_version": "3"
+    },
+    "after_rollback": {
+      "bundle_fingerprint": "64946b3dea9d60f1",
+      "bundle_model_version": "1",
+      "registry_production_version": "1"
+    }
+  },
+  "monitoring_levels": {
+    "before": {
+      "1": {
+        "level": "OK",
+        "rmse": 7.18,
+        "rmse_ratio": 0.92
+      },
+      "2": {
+        "level": "WARNING",
+        "rmse": 9.21,
+        "rmse_ratio": 1.18
+      },
+      "3": {
+        "level": "CRITICAL",
+        "rmse": 16.24,
+        "rmse_ratio": 2.08
+      }
+    },
+    "after_retrain": {
+      "1": {
+        "level": "OK",
+        "rmse": 6.88,
+        "rmse_ratio": 0.8
+      },
+      "2": {
+        "level": "OK",
+        "rmse": 7.85,
+        "rmse_ratio": 0.91
+      },
+      "3": {
+        "level": "CRITICAL",
+        "rmse": 13.51,
+        "rmse_ratio": 1.57
+      }
+    },
+    "after_rollback": {
+      "1": {
+        "level": "OK",
+        "rmse": 7.18,
+        "rmse_ratio": 0.92
+      },
+      "2": {
+        "level": "WARNING",
+        "rmse": 9.21,
+        "rmse_ratio": 1.18
+      },
+      "3": {
+        "level": "CRITICAL",
+        "rmse": 16.24,
+        "rmse_ratio": 2.08
+      }
+    }
+  },
+  "restored_to_original": true
+}

@@ -1,0 +1,31 @@
+flowchart LR
+  cfg[/"configs/config.yaml<br/>(validated, hashed)"/]
+  raw[("data/raw/*.csv<br/>+ new batch file")]
+  ingest["1 · ingest<br/>dataset.csv · meta.json<br/>data_version = sha256"]
+  validate{"2 · validate<br/>DATA GATE"}
+  features["3 · features<br/>train/test (hash split)<br/>reference profile"]
+  train["4 · train<br/>GridSearchCV → MLflow run"]
+  evaluate{"5 · evaluate<br/>MODEL GATE<br/>thresholds + vs production"}
+  register["6 · register<br/>MLflow alias: candidate"]
+  deploy["7 · deploy<br/>atomic bundle swap<br/>alias: production"]
+  monitor["8 · monitor<br/>data drift + performance drift<br/>batches 1-3"]
+  stop1(["exit 2 · stop safely<br/>production unchanged"])
+  stop2(["exit 3 · stop safely<br/>production unchanged"])
+  api["FastAPI container<br/>/predict · /metrics"]
+  graf["Prometheus / Pushgateway<br/>Grafana · HTML report"]
+  retrain(["hpp retrain --batches 1,2,3"])
+
+  cfg -.-> ingest
+  raw --> ingest --> validate
+  validate -- pass --> features --> train --> evaluate
+  validate -- fail --> stop1
+  evaluate -- pass --> register --> deploy --> monitor
+  evaluate -- fail --> stop2
+  deploy --> api --> graf
+  monitor --> graf
+  monitor -- "CRITICAL → retrain recommended" --> retrain -.-> ingest
+
+  classDef gate fill:#fde2e1,stroke:#b42318,color:#1f1f1f
+  classDef stop fill:#f2f4f7,stroke:#667085,color:#1f1f1f
+  class validate,evaluate gate
+  class stop1,stop2 stop

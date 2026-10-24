@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hpp"
+version = "1.0.0"
+description = "End-to-end MLflow pipeline for house-price prediction: data -> gated training -> registry -> serving -> monitoring"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+  { name = "Omer Raza (B052)" },
+  { name = "Arfeen Khan (B050)" },
+]
+# Runtime dependencies are pinned in requirements*.txt (reproducibility); this list is the minimum to import the package.
+dependencies = [
+  "numpy",
+  "pandas",
+  "scikit-learn",
+  "scipy",
+  "pyyaml",
+  "pydantic>=2",
+  "joblib",
+]
+
+[project.optional-dependencies]
+pipeline = ["mlflow", "prefect", "matplotlib", "requests"]
+serving = ["fastapi", "uvicorn", "prometheus-client"]
+dev = ["pytest", "httpx", "ruff"]
+
+[project.scripts]
+hpp = "hpp.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "integration: end-to-end tests that need MLflow installed",
+  "api: tests that need FastAPI installed",
+]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning", "ignore::UserWarning"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B"]
+ignore = ["E501", "B008", "B905"]

@@ -1,0 +1,14 @@
+# FAILURE SCENARIO 3 (Task 4) - a pull request that makes the trees much deeper "for accuracy".
+# The candidate overfits: it still clears every absolute threshold (RMSE ~8.0 <= 9.0) but it is
+# ~10% worse than the model already in production on the same test set.
+# Expected: MODEL GATE FAILS on compare.production (> +2% RMSE); production keeps serving.
+#   hpp run --override configs/scenarios/regressed_model.yaml
+training:
+  model_type: gradient_boosting
+  models:
+    gradient_boosting:
+      params: {loss: squared_error, subsample: 0.8, min_samples_leaf: 5, random_state: 42}
+      search:
+        n_estimators: [600]
+        learning_rate: [0.05]
+        max_depth: [8]

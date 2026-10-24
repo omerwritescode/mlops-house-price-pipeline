@@ -1,0 +1,610 @@
+{
+  "stage": "monitor",
+  "created_at": "2026-10-24T10:47:07Z",
+  "pipeline_run_id": "20261024T104552-dfd2c8",
+  "model": {
+    "model_name": "house-price-model",
+    "model_version": "3",
+    "mlflow_run_id": "2e1d827ec07543ddb2146ab3ec57690c",
+    "git_commit": "efedbc207d0a67c2cac8603ff2d15a55ef50b3c4",
+    "data_version": "b740cd06b7a1c70b",
+    "config_hash": "97afb4959b33bf3b",
+    "image_tag": "local"
+  },
+  "reference": {
+    "holdout_rmse": 8.622407961214472,
+    "holdout_mae": 6.436061094891041,
+    "mean_price": 62.77619927862939,
+    "holdout_pred_mean": 62.64676129426108
+  },
+  "thresholds": {
+    "batches": [
+      1,
+      2,
+      3
+    ],
+    "psi_bins": 10,
+    "psi_warning": 0.1,
+    "psi_critical": 0.2,
+    "ks_pvalue": 0.01,
+    "drift_share_critical": 0.3,
+    "rmse_ratio_warning": 1.15,
+    "rmse_ratio_critical": 1.3,
+    "bias_warning_pct": 0.05,
+    "bias_critical_pct": 0.1,
+    "missing_increase_warning": 0.05,
+    "latency_p95_ms_max": 300.0,
+    "error_rate_max": 0.01,
+    "pushgateway_url": "",
+    "api_url": "",
+    "auto_retrain": false
+  },
+  "overall_level": "CRITICAL",
+  "retrain_recommended": true,
+  "batches": [
+    {
+      "batch": "1",
+      "n_rows": 500,
+      "level": "OK",
+      "recommended_action": "No action - keep serving the production model.",
+      "data_quality": {
+        "passed": true,
+        "failed_checks": [],
+        "message": "data gate passed - 15 checks on 500 rows"
+      },
+      "drift": [
+        {
+          "feature": "Area_sqft",
+          "psi": 0.019997355121699364,
+          "p_value": 0.21568978443608844,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 1127.2362488728584,
+          "cur_mean": 1152.29,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Bedrooms",
+          "psi": 0.0061663702487156375,
+          "p_value": 0.29787998897741075,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 2.3766907123534717,
+          "cur_mean": 2.424,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Bathrooms",
+          "psi": 0.0007509217759061311,
+          "p_value": 0.9999367082869849,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 1.954463480613165,
+          "cur_mean": 1.976,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Age_Years",
+          "psi": 0.009637178666878734,
+          "p_value": 0.8781981437303825,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 20.00705384434517,
+          "cur_mean": 19.939583333333335,
+          "ref_missing": 0.04125338142470694,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Distance_to_Center_km",
+          "psi": 0.02074884566496979,
+          "p_value": 0.279571927632487,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 11.9481811781272,
+          "cur_mean": 11.716041666666666,
+          "ref_missing": 0.03944995491433724,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Neighborhood_Score",
+          "psi": 0.01568686563094754,
+          "p_value": 0.9971495105943877,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 6.017551691729323,
+          "cur_mean": 6.0910416666666665,
+          "ref_missing": 0.0405770964833183,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Has_Parking",
+          "psi": 0.0,
+          "p_value": 0.9890003139946486,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 0.5971596032461677,
+          "cur_mean": 0.572,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Property_Condition",
+          "psi": 0.004474631975442857,
+          "p_value": 0.5235818348409109,
+          "test": "chi2",
+          "severity": "OK",
+          "ref_mean": null,
+          "cur_mean": null,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "City_Zone",
+          "psi": 0.0035651200288653187,
+          "p_value": 0.7832067502525285,
+          "test": "chi2",
+          "severity": "OK",
+          "ref_mean": null,
+          "cur_mean": null,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        }
+      ],
+      "drift_share": 0.0,
+      "target_psi": 0.01407248392950619,
+      "prediction_psi": 0.022990414845946987,
+      "prediction_summary": {
+        "mean": 63.36756968890527,
+        "p10": 38.33871153820038,
+        "p50": 61.94003121182637,
+        "p90": 91.7631078531525
+      },
+      "performance": {
+        "rmse": 6.877357722153074,
+        "mae": 5.31438003944645,
+        "r2": 0.9002678013663733,
+        "mape": 0.09193098199463494,
+        "bias": -1.4119496889052663,
+        "p90_abs_error": 11.154590301525577,
+        "within_10pct": 0.632,
+        "n": 500,
+        "rmse_ratio": 0.7976145124527828,
+        "bias_pct": 0.02249179952163701,
+        "reference_rmse": 8.622407961214472
+      },
+      "operational": {
+        "mode": "in-process (row-by-row model.predict)",
+        "requests": 500,
+        "errors": 0,
+        "error_rate": 0.0,
+        "latency_ms_p50": 11.54555099992649,
+        "latency_ms_p95": 16.273700050305706,
+        "latency_ms_p99": 17.07508894040984,
+        "throughput_rps": 79.71120856156112
+      },
+      "alerts": []
+    },
+    {
+      "batch": "2",
+      "n_rows": 500,
+      "level": "OK",
+      "recommended_action": "No action - keep serving the production model.",
+      "data_quality": {
+        "passed": true,
+        "failed_checks": [],
+        "message": "data gate passed - 15 checks on 500 rows"
+      },
+      "drift": [
+        {
+          "feature": "Area_sqft",
+          "psi": 0.03584434754931809,
+          "p_value": 0.0008774141387123627,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 1127.2362488728584,
+          "cur_mean": 1064.388,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Bedrooms",
+          "psi": 0.015565699907342499,
+          "p_value": 0.4886236700327557,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 2.3766907123534717,
+          "cur_mean": 2.268,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Bathrooms",
+          "psi": 0.013967134802524404,
+          "p_value": 0.18976388784353593,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 1.954463480613165,
+          "cur_mean": 1.856,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Age_Years",
+          "psi": 0.011745267202269354,
+          "p_value": 0.9315048635576766,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 20.00705384434517,
+          "cur_mean": 20.170833333333334,
+          "ref_missing": 0.04125338142470694,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Distance_to_Center_km",
+          "psi": 0.027272886115560502,
+          "p_value": 0.33329938396693914,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 11.9481811781272,
+          "cur_mean": 12.386458333333334,
+          "ref_missing": 0.03944995491433724,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Neighborhood_Score",
+          "psi": 0.017932785671294086,
+          "p_value": 0.6902465753556699,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 6.017551691729323,
+          "cur_mean": 6.0964583333333335,
+          "ref_missing": 0.0405770964833183,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Has_Parking",
+          "psi": 0.0,
+          "p_value": 0.9999999889760934,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 0.5971596032461677,
+          "cur_mean": 0.606,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Property_Condition",
+          "psi": 0.016985014989148402,
+          "p_value": 0.03788741354196812,
+          "test": "chi2",
+          "severity": "OK",
+          "ref_mean": null,
+          "cur_mean": null,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "City_Zone",
+          "psi": 0.018833651453766833,
+          "p_value": 0.06284847013406984,
+          "test": "chi2",
+          "severity": "OK",
+          "ref_mean": null,
+          "cur_mean": null,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        }
+      ],
+      "drift_share": 0.0,
+      "target_psi": 0.014552854912023018,
+      "prediction_psi": 0.023665957331161606,
+      "prediction_summary": {
+        "mean": 61.20552983232909,
+        "p10": 34.770097597148215,
+        "p50": 61.146011376592504,
+        "p90": 88.99265429090393
+      },
+      "performance": {
+        "rmse": 7.848349965731451,
+        "mae": 5.894982332931715,
+        "r2": 0.8931043219399032,
+        "mape": 0.09719027820395373,
+        "bias": 2.6183101676709115,
+        "p90_abs_error": 12.401606663113217,
+        "within_10pct": 0.622,
+        "n": 500,
+        "rmse_ratio": 0.9102271663594546,
+        "bias_pct": 0.041708644323140004,
+        "reference_rmse": 8.622407961214472
+      },
+      "operational": {
+        "mode": "in-process (row-by-row model.predict)",
+        "requests": 500,
+        "errors": 0,
+        "error_rate": 0.0,
+        "latency_ms_p50": 11.645751500054757,
+        "latency_ms_p95": 16.649171199378543,
+        "latency_ms_p99": 17.971962550573153,
+        "throughput_rps": 78.82283244042739
+      },
+      "alerts": []
+    },
+    {
+      "batch": "3",
+      "n_rows": 500,
+      "level": "CRITICAL",
+      "recommended_action": "Trigger the retraining pipeline on training data + the labelled recent batches (`hpp retrain --batches <n>`). The new model must pass the data gate and the model gate (including the comparison against production) before it replaces production. If the alert is data-quality related, quarantine the batch and exclude it from training.",
+      "data_quality": {
+        "passed": true,
+        "failed_checks": [],
+        "message": "data gate passed - 15 checks on 500 rows"
+      },
+      "drift": [
+        {
+          "feature": "Area_sqft",
+          "psi": 0.2526473032286711,
+          "p_value": 1.4041035238250541e-16,
+          "test": "ks",
+          "severity": "CRITICAL",
+          "ref_mean": 1127.2362488728584,
+          "cur_mean": 936.318,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Bedrooms",
+          "psi": 0.1605690937979333,
+          "p_value": 7.860543103958121e-08,
+          "test": "ks",
+          "severity": "WARNING",
+          "ref_mean": 2.3766907123534717,
+          "cur_mean": 2.024,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Bathrooms",
+          "psi": 0.0814521087493546,
+          "p_value": 9.435902901607444e-07,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 1.954463480613165,
+          "cur_mean": 1.724,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Age_Years",
+          "psi": 0.0059242575972299856,
+          "p_value": 0.9988897414098434,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 20.00705384434517,
+          "cur_mean": 20.158333333333335,
+          "ref_missing": 0.04125338142470694,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Distance_to_Center_km",
+          "psi": 0.017485997779535724,
+          "p_value": 0.5742162770154056,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 11.9481811781272,
+          "cur_mean": 11.473333333333334,
+          "ref_missing": 0.03944995491433724,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Neighborhood_Score",
+          "psi": 0.021421252110096295,
+          "p_value": 0.3936337811002292,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 6.017551691729323,
+          "cur_mean": 5.9262500000000005,
+          "ref_missing": 0.0405770964833183,
+          "cur_missing": 0.04
+        },
+        {
+          "feature": "Has_Parking",
+          "psi": 0.0,
+          "p_value": 0.800057334178734,
+          "test": "ks",
+          "severity": "OK",
+          "ref_mean": 0.5971596032461677,
+          "cur_mean": 0.626,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "Property_Condition",
+          "psi": 0.016224473983877052,
+          "p_value": 0.032386677480454006,
+          "test": "chi2",
+          "severity": "OK",
+          "ref_mean": null,
+          "cur_mean": null,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        },
+        {
+          "feature": "City_Zone",
+          "psi": 0.16172123450577275,
+          "p_value": 5.7713343338762206e-18,
+          "test": "chi2",
+          "severity": "WARNING",
+          "ref_mean": null,
+          "cur_mean": null,
+          "ref_missing": 0.0,
+          "cur_missing": 0.0
+        }
+      ],
+      "drift_share": 0.3333333333333333,
+      "target_psi": 0.10618373630113709,
+      "prediction_psi": 0.06671196486654,
+      "prediction_summary": {
+        "mean": 59.49308892597637,
+        "p10": 32.04760234572648,
+        "p50": 57.178667593036685,
+        "p90": 89.54842357102612
+      },
+      "performance": {
+        "rmse": 13.506885757592052,
+        "mae": 10.651337902982714,
+        "r2": 0.7585187514210309,
+        "mape": 0.14360992629689112,
+        "bias": 10.117411074023625,
+        "p90_abs_error": 22.16714780436708,
+        "within_10pct": 0.326,
+        "n": 500,
+        "rmse_ratio": 1.5664865103053645,
+        "bias_pct": 0.1611663526987026,
+        "reference_rmse": 8.622407961214472
+      },
+      "operational": {
+        "mode": "in-process (row-by-row model.predict)",
+        "requests": 500,
+        "errors": 0,
+        "error_rate": 0.0,
+        "latency_ms_p50": 11.290000499684538,
+        "latency_ms_p95": 17.49921880018519,
+        "latency_ms_p99": 18.649581050403864,
+        "throughput_rps": 79.33701677923233
+      },
+      "alerts": [
+        {
+          "batch": "3",
+          "severity": "CRITICAL",
+          "rule": "data_drift.feature",
+          "metric": "psi.Area_sqft",
+          "value": 0.2526,
+          "threshold": 0.2,
+          "message": "Area_sqft distribution shifted: PSI 0.253 (>= 0.2), ks p=1.4e-16"
+        },
+        {
+          "batch": "3",
+          "severity": "WARNING",
+          "rule": "data_drift.feature",
+          "metric": "psi.Bedrooms",
+          "value": 0.1606,
+          "threshold": 0.1,
+          "message": "Bedrooms distribution shifted: PSI 0.161 (>= 0.1), ks p=7.9e-08"
+        },
+        {
+          "batch": "3",
+          "severity": "WARNING",
+          "rule": "data_drift.feature",
+          "metric": "psi.City_Zone",
+          "value": 0.1617,
+          "threshold": 0.1,
+          "message": "City_Zone distribution shifted: PSI 0.162 (>= 0.1), chi2 p=5.8e-18"
+        },
+        {
+          "batch": "3",
+          "severity": "CRITICAL",
+          "rule": "data_drift.dataset",
+          "metric": "drift_share",
+          "value": 0.3333,
+          "threshold": 0.3,
+          "message": "dataset drift: 3/9 features drifted (33%)"
+        },
+        {
+          "batch": "3",
+          "severity": "CRITICAL",
+          "rule": "performance.rmse_ratio",
+          "metric": "rmse_ratio",
+          "value": 1.5665,
+          "threshold": 1.3,
+          "message": "RMSE 13.51 is 1.57x the holdout RMSE 8.62 (>= 1.3x)"
+        },
+        {
+          "batch": "3",
+          "severity": "CRITICAL",
+          "rule": "performance.bias",
+          "metric": "bias_pct",
+          "value": 0.1612,
+          "threshold": 0.1,
+          "message": "systematic under-pricing: mean error +10.12 lakhs = 16.1% of the reference mean price (>= 10%)"
+        },
+        {
+          "batch": "3",
+          "severity": "WARNING",
+          "rule": "target_drift",
+          "metric": "psi.target",
+          "value": 0.1062,
+          "threshold": 0.1,
+          "message": "actual price distribution shifted: PSI 0.106, mean 69.6 vs reference 62.8"
+        }
+      ]
+    }
+  ],
+  "alerts": [
+    {
+      "batch": "3",
+      "severity": "CRITICAL",
+      "rule": "data_drift.feature",
+      "metric": "psi.Area_sqft",
+      "value": 0.2526,
+      "threshold": 0.2,
+      "message": "Area_sqft distribution shifted: PSI 0.253 (>= 0.2), ks p=1.4e-16"
+    },
+    {
+      "batch": "3",
+      "severity": "WARNING",
+      "rule": "data_drift.feature",
+      "metric": "psi.Bedrooms",
+      "value": 0.1606,
+      "threshold": 0.1,
+      "message": "Bedrooms distribution shifted: PSI 0.161 (>= 0.1), ks p=7.9e-08"
+    },
+    {
+      "batch": "3",
+      "severity": "WARNING",
+      "rule": "data_drift.feature",
+      "metric": "psi.City_Zone",
+      "value": 0.1617,
+      "threshold": 0.1,
+      "message": "City_Zone distribution shifted: PSI 0.162 (>= 0.1), chi2 p=5.8e-18"
+    },
+    {
+      "batch": "3",
+      "severity": "CRITICAL",
+      "rule": "data_drift.dataset",
+      "metric": "drift_share",
+      "value": 0.3333,
+      "threshold": 0.3,
+      "message": "dataset drift: 3/9 features drifted (33%)"
+    },
+    {
+      "batch": "3",
+      "severity": "CRITICAL",
+      "rule": "performance.rmse_ratio",
+      "metric": "rmse_ratio",
+      "value": 1.5665,
+      "threshold": 1.3,
+      "message": "RMSE 13.51 is 1.57x the holdout RMSE 8.62 (>= 1.3x)"
+    },
+    {
+      "batch": "3",
+      "severity": "CRITICAL",
+      "rule": "performance.bias",
+      "metric": "bias_pct",
+      "value": 0.1612,
+      "threshold": 0.1,
+      "message": "systematic under-pricing: mean error +10.12 lakhs = 16.1% of the reference mean price (>= 10%)"
+    },
+    {
+      "batch": "3",
+      "severity": "WARNING",
+      "rule": "target_drift",
+      "metric": "psi.target",
+      "value": 0.1062,
+      "threshold": 0.1,
+      "message": "actual price distribution shifted: PSI 0.106, mean 69.6 vs reference 62.8"
+    }
+  ]
+}

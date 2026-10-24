@@ -1,0 +1,129 @@
+# Merge to main: full pipeline -> reproducibility check -> build image tagged with the commit ->
+# smoke test -> push to GHCR -> GitHub Release with the model card, gate result and monitoring report.
+name: release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write     # create releases
+  packages: write     # push to ghcr.io
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      HPP_ORCHESTRATOR: local
+      MLFLOW_TRACKING_URI: sqlite:///mlflow.db
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute version and image names
+        id: meta
+        run: |
+          OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          SHORT=${GITHUB_SHA::7}
+          VERSION="v1.0.${GITHUB_RUN_NUMBER}"
+          echo "image=ghcr.io/${OWNER}/hpp-api" >> "$GITHUB_OUTPUT"
+          echo "short=${SHORT}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "IMAGE_TAG=sha-${SHORT}" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install
+        run: |
+          pip install -r requirements.txt
+          pip install --no-deps -e .
+
+      - name: Tests
+        run: pytest -q
+
+      - name: Full pipeline (main config)
+        run: hpp run
+
+      - name: Reproducibility check (fresh clone vs committed reference metrics)
+        run: hpp verify-repro
+
+      - name: Lineage report
+        run: hpp lineage | tee lineage.txt
+
+      - name: Build image (tagged with the commit)
+        run: |
+          MODEL_VERSION=$(python -c "import json;print(json.load(open('deployments/current/manifest.json'))['model_version'])")
+          docker build \
+            --build-arg GIT_SHA=${GITHUB_SHA} \
+            --build-arg IMAGE_TAG=sha-${{ steps.meta.outputs.short }} \
+            --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+            --build-arg MODEL_VERSION=${MODEL_VERSION} \
+            -t ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short }} \
+            -t ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.version }} \
+            -t ${{ steps.meta.outputs.image }}:latest .
+
+      - name: Smoke test image
+        run: |
+          docker run -d --name api -p 8000:8000 ${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short }}
+          for i in $(seq 1 30); do curl -sf localhost:8000/health && break; sleep 1; done
+          curl -sf localhost:8000/version | tee version.json
+          grep -q "${GITHUB_SHA}" version.json
+          curl -sf -X POST localhost:8000/predict -H 'content-type: application/json' \
+            -d '{"Area_sqft":1150,"Bedrooms":2,"Bathrooms":2,"Age_Years":12,"Distance_to_Center_km":9.5,"Neighborhood_Score":6.5,"Has_Parking":1,"Property_Condition":"Good","City_Zone":"Central"}'
+          docker rm -f api
+
+      - name: Push to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push --all-tags ${{ steps.meta.outputs.image }}
+
+      - name: Release notes
+        run: |
+          python - <<'PY' > release_notes.md
+          import json
+          m = json.load(open("deployments/current/manifest.json"))
+          g = json.load(open("artifacts/evaluate/gate.json"))
+          s = json.load(open("reports/monitoring/summary.json"))
+          h = m["holdout_metrics"]
+          print(f"## Model {m['model_name']} v{m['model_version']}\n")
+          print(f"- Image: `${{ steps.meta.outputs.image }}:sha-${{ steps.meta.outputs.short }}` (also `${{ steps.meta.outputs.version }}`, `latest`)")
+          print(f"- Commit: `{m['git_commit']}` | data version `{m['data_version']}` | config hash `{m['config_hash']}`")
+          print(f"- MLflow run: `{m['mlflow_run_id']}` | model type `{m['model_type']}` {m['best_params']}")
+          print(f"- Holdout: RMSE **{h['rmse']:.3f}**, MAE {h['mae']:.3f}, R² {h['r2']:.3f}, MAPE {h['mape']:.1%}")
+          print(f"- Model gate: {g['message']}")
+          print(f"- Monitoring: overall **{s['overall_level']}** - " + ", ".join(f"batch {b['batch']}: {b['level']}" for b in s['batches']))
+          print("\n### Rollback\nRun the `rollback` workflow with the previous image tag, or locally: "
+                "`HPP_IMAGE=<previous tag> docker compose up -d api` - see docs/rollback.md.")
+          PY
+          cat release_notes.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.meta.outputs.version }}" \
+            --title "${{ steps.meta.outputs.version }} (sha-${{ steps.meta.outputs.short }})" \
+            --notes-file release_notes.md --target "${GITHUB_SHA}" \
+            deployments/current/manifest.json artifacts/evaluate/gate.json \
+            reports/monitoring/report.html reports/monitoring/summary.json lineage.txt
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-evidence
+          path: |
+            deployments/current/
+            artifacts/evaluate/
+            reports/
+            logs/
+            lineage.txt
+            release_notes.md
