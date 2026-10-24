@@ -1,6 +1,6 @@
 # Evidence: retrain, then rollback
 
-Generated 2026-10-24T11:46:41Z by `python scripts/demo_rollback.py`.
+Generated 2026-10-24T16:53:25Z by `python scripts/demo_rollback.py`.
 
 1. `hpp retrain --batches 1,2,3` exited **0**. Model gate: model gate passed - RMSE 8.622, MAE 6.436, R2 0.851
 2. `hpp rollback` exited **0**.
@@ -10,7 +10,7 @@ Generated 2026-10-24T11:46:41Z by `python scripts/demo_rollback.py`.
 
 | | before | after retrain | after rollback |
 |---|---|---|---|
-| bundle_fingerprint | `6bd3a42fea08e24e` | `9e5bd6dadf01a876` | `6bd3a42fea08e24e` |
+| bundle_fingerprint | `086453c2e9e7a3b5` | `3a1c049ab32b7ce0` | `086453c2e9e7a3b5` |
 | bundle_model_version | `1` | `2` | `1` |
 | registry_production_version | `1` | `2` | `1` |
 
@@ -30,8 +30,8 @@ Rollback output:
   "rolled_back_to": "1",
   "registry": "aliases swapped",
   "api_reload": "not configured (API picks up the bundle on restart)",
-  "at": "2026-10-24T11:46:18Z",
-  "bundle_fingerprint": "6bd3a42fea08e24e"
+  "at": "2026-10-24T16:52:55Z",
+  "bundle_fingerprint": "086453c2e9e7a3b5"
 }
 ```
 

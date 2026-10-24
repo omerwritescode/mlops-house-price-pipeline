@@ -13,7 +13,7 @@ LABEL org.opencontainers.image.title="house-price-api" \
       org.opencontainers.image.revision="${GIT_SHA}" \
       org.opencontainers.image.version="${IMAGE_TAG}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.source="https://github.com/OWNER/mlops-house-price-pipeline" \
+      org.opencontainers.image.source="https://github.com/omerwritescode/mlops-house-price-pipeline" \
       hpp.model.version="${MODEL_VERSION}"
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 \
