@@ -24,7 +24,8 @@ _ENV_PATTERN = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-([^}]*))?\}")
 
 
 class _Strict(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    # protected_namespaces=(): fields such as model_type / model_name are ours, not pydantic internals
+    model_config = ConfigDict(extra="forbid", frozen=True, protected_namespaces=())
 
 
 class ProjectCfg(_Strict):
