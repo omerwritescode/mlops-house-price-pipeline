@@ -58,15 +58,25 @@ def test_invalid_input_rejected(client, bad):
     assert client.post("/predict", json={**LISTING, **bad}).status_code == 422
 
 
+def _samples(text, name):
+    """Parse the exposition format, so the test does not depend on how labels are ordered in the text."""
+    from prometheus_client.parser import text_string_to_metric_families
+
+    return [s for fam in text_string_to_metric_families(text) for s in fam.samples if s.name == name]
+
+
 def test_metrics_exposed(client):
     client.post("/predict", json=LISTING)
     client.post("/predict", json={**LISTING, "Area_sqft": -1})
     text = client.get("/metrics").text
-    assert 'hpp_http_requests_total{method="POST",endpoint="/predict",status="200"}' in text
-    assert 'status="422"' in text
-    assert "hpp_http_request_duration_seconds_bucket" in text
-    assert "hpp_predicted_price_lakhs_bucket" in text
-    assert 'hpp_model_info{' in text and 'model_version="7"' in text
+    reqs = _samples(text, "hpp_http_requests_total")
+    assert any(s.labels == {"method": "POST", "endpoint": "/predict", "status": "200"} and s.value >= 1
+               for s in reqs), reqs
+    assert any(s.labels.get("endpoint") == "/predict" and s.labels.get("status") == "422" for s in reqs), reqs
+    assert _samples(text, "hpp_http_request_duration_seconds_bucket")
+    assert _samples(text, "hpp_predicted_price_lakhs_bucket")
+    info = _samples(text, "hpp_model_info")
+    assert any(s.labels.get("model_version") == "7" and s.value == 1 for s in info), info
 
 
 def test_reload_requires_token(client):
