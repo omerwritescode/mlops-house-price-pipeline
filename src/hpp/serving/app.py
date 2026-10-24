@@ -29,7 +29,16 @@ import time
 from pathlib import Path
 
 from fastapi import FastAPI, Header, HTTPException, Request, Response
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
+from prometheus_client import (
+    CONTENT_TYPE_LATEST,
+    CollectorRegistry,
+    Counter,
+    Gauge,
+    Histogram,
+    PlatformCollector,
+    ProcessCollector,
+    generate_latest,
+)
 
 from hpp import __version__
 from hpp.serving.predictor import Predictor
@@ -42,16 +51,21 @@ ADMIN_TOKEN = os.environ.get("HPP_ADMIN_TOKEN", "change-me")
 IMAGE_TAG = os.environ.get("IMAGE_TAG", "local")
 GIT_SHA = os.environ.get("GIT_SHA", "unknown")
 
-REQUESTS = Counter("hpp_http_requests_total", "HTTP requests", ["method", "endpoint", "status"])
-LATENCY = Histogram("hpp_http_request_duration_seconds", "Request latency", ["endpoint"],
+# A registry owned by this module (not prometheus_client's global one), so re-importing the app - as the
+# tests do, or a dev-server reload - never fails with "Duplicated timeseries in CollectorRegistry".
+REGISTRY = CollectorRegistry()
+ProcessCollector(registry=REGISTRY)
+PlatformCollector(registry=REGISTRY)
+REQUESTS = Counter("hpp_http_requests_total", "HTTP requests", ["method", "endpoint", "status"], registry=REGISTRY)
+LATENCY = Histogram("hpp_http_request_duration_seconds", "Request latency", ["endpoint"], registry=REGISTRY,
                     buckets=(0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.15, 0.25, 0.5, 1.0, 2.5, 5.0))
-PREDICTIONS = Counter("hpp_predictions_total", "Listings scored")
-PRED_PRICE = Histogram("hpp_predicted_price_lakhs", "Predicted price (lakhs)",
+PREDICTIONS = Counter("hpp_predictions_total", "Listings scored", registry=REGISTRY)
+PRED_PRICE = Histogram("hpp_predicted_price_lakhs", "Predicted price (lakhs)", registry=REGISTRY,
                        buckets=(10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 200, 300))
-PRED_ERRORS = Counter("hpp_prediction_errors_total", "Failed predictions", ["reason"])
+PRED_ERRORS = Counter("hpp_prediction_errors_total", "Failed predictions", ["reason"], registry=REGISTRY)
 MODEL_INFO = Gauge("hpp_model_info", "Currently loaded model", ["model_version", "git_commit", "image_tag",
-                                                                 "data_version"])
-RELOADS = Counter("hpp_model_reloads_total", "Model reloads", ["result"])
+                                                                 "data_version"], registry=REGISTRY)
+RELOADS = Counter("hpp_model_reloads_total", "Model reloads", ["result"], registry=REGISTRY)
 
 app = FastAPI(title="House price API", version=__version__,
               description="Predicts asking prices (₹ lakhs) - MLOps Project 4, Group 10")
@@ -167,4 +181,4 @@ def reload_model(x_admin_token: str = Header(default="")) -> dict:
 
 @app.get("/metrics")
 def metrics() -> Response:
-    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+    return Response(generate_latest(REGISTRY), media_type=CONTENT_TYPE_LATEST)
